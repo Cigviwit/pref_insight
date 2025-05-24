@@ -7,6 +7,8 @@ import FormNavigation from './FormNavigation';
 import FormHeader from './FormHeader';
 import SuccessMessage from './SuccessMessage';
 import PatientInfoForm from './PatientInfoForm';
+import { submitForm } from '../services/formService';
+import { FormSubmission } from '../lib/supabase';
 
 const PatientForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(-1); // Start at -1 for patient info
@@ -66,11 +68,38 @@ const PatientForm: React.FC = () => {
     }
   }, [currentStep, isPatientInfoComplete, totalSteps, isCurrentStepValid]);
   
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (isCurrentStepValid) {
-      console.log('Form submitted with data:', formData);
-      setIsSubmitted(true);
-      // Here you would typically send the data to your backend
+      try {
+        // Prepare the data for Supabase (ensuring all values are strings)
+        const submissionData: FormSubmission = {
+          email: String(formData.email || ''),
+          doctor_name: String(formData.doctorName || ''),
+          institution_name: String(formData.institutionName || ''),
+          patient_identifier: String(formData.patientIdentifier || ''),
+          relation: String(formData.relation || ''),
+          age: String(formData.age || ''),
+          patient_age: String(formData.patient_age || ''),
+          main_income: String(formData.main_income || ''),
+          treatment_contribution: String(formData.treatment_contribution || ''),
+          treatment_expectations: String(formData.treatment_expectations || '')
+        };
+
+        // Submit to Supabase
+        const { error } = await submitForm(submissionData);
+        
+        if (error) {
+          console.error('Error submitting form:', error);
+          alert('There was an error submitting the form. Please try again.');
+          return;
+        }
+        
+        // If successful, show success message
+        setIsSubmitted(true);
+      } catch (error) {
+        console.error('Error in form submission:', error);
+        alert('An unexpected error occurred. Please try again.');
+      }
     }
   }, [formData, isCurrentStepValid]);
   
