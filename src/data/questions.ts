@@ -64,8 +64,8 @@ export const questions: Question[] = [
   {
     id: 'treatment_expectations',
     title: 'Question 6: What do you expect from your treatment?',
-    description: 'There are six options. Rank them from most important to least important to you.',
-    type: 'ranking',
+    description: 'Rate the importance of each of the following treatment expectations on a scale from 1 (Least Important) to 5 (Most Important)',
+    type: 'slider',
     options: [
       { value: 'best_chance_cure', label: 'Best Chance of cure' },
       { value: 'longest_survival', label: 'Longest survival possible' },
